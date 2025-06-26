@@ -1,6 +1,6 @@
-<h1 align="center">🤖 Repositório Robótica - RoboCup Soccer Lightweight</h1>
+<h1>🤖 Repositório Robótica - RoboCup Soccer Lightweight</h1>
 
-<p align="center">
+<p>
   Aqui você encontrará um breve resumo do conteúdo disponível e orientações de navegação, com o objetivo de facilitar sua experiência de pesquisa e exploração deste projeto. Esperamos que estas informações contribuam para uma compreensão mais clara do nosso trabalho em equipe e ajudem no aproveitamento máximo do material desenvolvido.
 </p>
 
