@@ -61,7 +61,6 @@
 <h2>📫 Contato</h2>
 
 <ul>
-  <li>💼 <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/">https://www.linkedin.com/</a></li>
   <li>📧 <strong>Email:</strong> biotechsoccer@gmail.com</li>
   <li>🌐 <strong>Instagram:</strong> <a href="https://www.instagram.com/sesibiotech">@sesibiotech</a></li>
 </ul>
