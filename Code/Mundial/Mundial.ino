@@ -46,9 +46,9 @@ int BMin;                         // Valor mínimo da bússola
 char quebra;                      // Caractere para quebra de linha ou estado
 
 // Velocidade
-const int VeloCurva = 60;    // Velocidade para curva à esquerda
-const int VeloCurvaD = 75;   // Velocidade para curva à direita
-const int VeloFrente = 100;  // Velocidade para andar para frente
+const int VeloCurva = 55;    // Velocidade para curva à esquerda
+const int VeloCurvaD = 70;   // Velocidade para curva à direita
+const int VeloFrente = 110;  // Velocidade para andar para frente
 
 // Refletância
 const int FrtR = A0;  // Sensor de refletância frontal
@@ -120,9 +120,9 @@ void setup() {
 }
 
 void loop() {
-  goleiro();  // Função para lógica do goleiro (está comentada, não executa)
-  // teste();     // Função de teste dos sensores e atuadores (está comentada)
-  // atacante();    // Função para executar a lógica do atacante
+  //goleiro();  // Função para lógica do goleiro (está comentada, não executa)
+  //teste();     // Função de teste dos sensores e atuadores (está comentada)
+  atacante();  // Função para executar a lógica do atacante
   // SeguirBola(); // Função para seguir a bola (está comentada)
 }
 
