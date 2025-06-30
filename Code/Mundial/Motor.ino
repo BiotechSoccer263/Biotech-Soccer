@@ -1,5 +1,5 @@
 void frente(int velocidade) {
-  // Motores da esquerda para frente
+  // Motores do lado esquerdo para andar para frente
   digitalWrite(IN1_ESQ, LOW);
   digitalWrite(IN2_ESQ, HIGH);
   digitalWrite(IN3_ESQ, HIGH);
@@ -7,7 +7,7 @@ void frente(int velocidade) {
   analogWrite(ENA_ESQ, velocidade);
   analogWrite(ENB_ESQ, velocidade);
 
-  // Motores da direita para frente
+  // Motores do lado direito para andar para frente
   digitalWrite(IN1_DIR, LOW);
   digitalWrite(IN2_DIR, HIGH);
   digitalWrite(IN3_DIR, HIGH);
@@ -17,7 +17,7 @@ void frente(int velocidade) {
 }
 
 void tras(int velocidade) {
-  // Motores da esquerda para frente
+  // Motores do lado esquerdo para andar para trás
   digitalWrite(IN1_ESQ, HIGH);
   digitalWrite(IN2_ESQ, LOW);
   digitalWrite(IN3_ESQ, LOW);
@@ -25,7 +25,7 @@ void tras(int velocidade) {
   analogWrite(ENA_ESQ, velocidade);
   analogWrite(ENB_ESQ, velocidade);
 
-  // Motores da direita para frente
+  // Motores do lado direito para andar para trás
   digitalWrite(IN1_DIR, HIGH);
   digitalWrite(IN2_DIR, LOW);
   digitalWrite(IN3_DIR, LOW);
@@ -35,13 +35,13 @@ void tras(int velocidade) {
 }
 
 void parar() {
-  // Motores da esquerda para frente
+  // Desliga todos os motores do lado esquerdo
   digitalWrite(IN1_ESQ, LOW);
   digitalWrite(IN2_ESQ, LOW);
   digitalWrite(IN3_ESQ, LOW);
   digitalWrite(IN4_ESQ, LOW);
 
-  // Motores da direita para frente
+  // Desliga todos os motores do lado direito
   digitalWrite(IN1_DIR, LOW);
   digitalWrite(IN2_DIR, LOW);
   digitalWrite(IN3_DIR, LOW);
@@ -49,8 +49,8 @@ void parar() {
 }
 
 void rotacionar(String lado, int velocidade) {
-  if (lado == "e") {
-    // Motores da esquerda para frente
+  if (lado == "e") {  // Rotacionar para ESQUERDA (sentido horário)
+    // Motores da esquerda para trás
     digitalWrite(IN1_ESQ, HIGH);
     digitalWrite(IN2_ESQ, LOW);
     digitalWrite(IN3_ESQ, LOW);
@@ -66,7 +66,7 @@ void rotacionar(String lado, int velocidade) {
     analogWrite(ENA_DIR, velocidade);
     analogWrite(ENB_DIR, velocidade);
 
-  } else if (lado == "d") {
+  } else if (lado == "d") {  // Rotacionar para DIREITA (sentido anti-horário)
     // Motores da esquerda para frente
     digitalWrite(IN1_ESQ, LOW);
     digitalWrite(IN2_ESQ, HIGH);
@@ -75,7 +75,7 @@ void rotacionar(String lado, int velocidade) {
     analogWrite(ENA_ESQ, velocidade);
     analogWrite(ENB_ESQ, velocidade);
 
-    // Motores da direita para frente
+    // Motores da direita para trás
     digitalWrite(IN1_DIR, HIGH);
     digitalWrite(IN2_DIR, LOW);
     digitalWrite(IN3_DIR, LOW);
@@ -86,9 +86,8 @@ void rotacionar(String lado, int velocidade) {
 }
 
 void lateral(String lado, int velocidade) {
-  if (lado == "e") {
-    // Movimento lateral para a ESQUERDA
-    // Esquerda frente, Direita trás
+  if (lado == "e") {  // Movimento lateral para ESQUERDA
+    // Motores do lado esquerdo para frente e do lado direito para trás (movimento diagonal)
     digitalWrite(IN1_ESQ, LOW);
     digitalWrite(IN2_ESQ, HIGH);
     digitalWrite(IN3_ESQ, LOW);
@@ -103,9 +102,8 @@ void lateral(String lado, int velocidade) {
     analogWrite(ENA_DIR, velocidade);
     analogWrite(ENB_DIR, velocidade);
 
-  } else if (lado == "d") {
-    // Movimento lateral para a DIREITA
-    // Esquerda frente, Direita trás
+  } else if (lado == "d") {  // Movimento lateral para DIREITA
+    // Motores do lado esquerdo para trás e do lado direito para frente (movimento diagonal)
     digitalWrite(IN1_ESQ, HIGH);
     digitalWrite(IN2_ESQ, LOW);
     digitalWrite(IN3_ESQ, HIGH);

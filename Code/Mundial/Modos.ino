@@ -1,68 +1,70 @@
 void atacante() {
-  SeguirBola();
+  SeguirBola();  // Função que faz o robô seguir a bola detectada pelo sensor infravermelho
 
-  if (digitalRead(chavecurso) == 1) {
-    alinhar();
+  if (digitalRead(chavecurso) == 1) {  // Se a chave física estiver pressionada
+    alinhar();  // Executa a função de alinhamento com o gol
   }
 }
 
 void goleiro() {
-  // Leitura do sensor infravermelho
+  // Leitura do sensor infravermelho para obter direção e intensidade da bola
   InfraredResult InfraredBall = InfraredSeeker::ReadAC();
-  ballDirecao = InfraredBall.Direction;
-  ballIntensi = InfraredBall.Strength;
+  ballDirecao = InfraredBall.Direction;  // Atualiza direção da bola
+  ballIntensi = InfraredBall.Strength;   // Atualiza intensidade do sinal
 
-  Serial.println(ballDirecao);
+  Serial.println(ballDirecao);           // Exibe a direção da bola no monitor serial
 
-  // Aciona chute se chave estiver pressionada
+  // Se a chave física estiver pressionada, executa a função de chute
   if (digitalRead(chavecurso) == 1) {
     chutar();
   }
 
-  // Movimentação com base nos sensores ultrassônicos frontal e traseiro
-  if (UTrs.read() >= 55) {
-    tras(150);
-    delay(200);
-  } else if (UTrs.read() <= 20 && ballDirecao >= 4 && ballDirecao <= 6) {
-    frente(150);
-    delay(200);
+  // Movimentação do robô de acordo com as leituras do sensor ultrassônico traseiro
+  if (UTrs.read() >= 55) {               // Se obstáculo distante atrás
+    tras(150);                           // Anda para trás com velocidade 150
+    delay(200);                          // Aguarda 200 ms
+  } else if (UTrs.read() <= 20 && ballDirecao >= 4 && ballDirecao <= 6) {  
+    // Se obstáculo muito próximo atrás e bola na frente (direção central)
+    frente(150);                         // Anda para frente com velocidade 150
+    delay(200);                          // Aguarda 200 ms
   }
 
-  // Leitura da bússola e correção de alinhamento
+  // Leitura da bússola para verificar alinhamento
   ReadCompassSensor();
 
-  Alinhado = false;  // Sempre será reavaliado aqui
+  Alinhado = false;                      // Reseta estado de alinhamento (será avaliado novamente)
 
-  if (quebra == 'E') {
-    if (BMin <= Bussola && Bussola < limite) {
+  // Correção de alinhamento com base na direção de rotação desejada (quebra)
+  if (quebra == 'E') {                   // Se precisa corrigir para a esquerda
+    if (BMin <= Bussola && Bussola < limite) { // Se bússola fora do intervalo correto
       Alinhado = false;
-      rotacionar("e", VeloCurva);  // "e" para esquerda
-      delay(50);
+      rotacionar("e", VeloCurva);        // Rotaciona para esquerda
+      delay(50);                         // Pequeno atraso para ajuste
     } else {
       Alinhado = false;
-      rotacionar("d", VeloCurva);  // "d" para direita
+      rotacionar("d", VeloCurva);        // Rotaciona para direita para correção
       delay(50);
     }
-  } else {
-    if (BMax >= Bussola && Bussola > limite) {
+  } else {                               // Senão, precisa corrigir para a direita
+    if (BMax >= Bussola && Bussola > limite) { // Se bússola fora do intervalo correto
       Alinhado = false;
-      rotacionar("d", VeloCurva);  // "d" para direita
+      rotacionar("d", VeloCurva);        // Rotaciona para direita
       delay(50);
     } else {
       Alinhado = false;
-      rotacionar("e", VeloCurva);  // "e" para esquerda
+      rotacionar("e", VeloCurva);        // Rotaciona para esquerda para correção
       delay(50);
     }
   }
 
-  // Lateralidade com base na direção da bola e nos sensores laterais
-  if (ballDirecao < 5 && UEsq.read() >= 40) {
-    lateral("e", 140);
-    delay(350);
-  } else if (ballDirecao > 5 && UDir.read() >= 40) {
-    lateral("d", 140);
+  // Movimentação lateral para interceptar bola se ela estiver em uma direção lateral
+  if (ballDirecao < 5 && UEsq.read() >= 40) { // Se bola está à esquerda e há espaço lateral
+    lateral("e", 140);                 // Move lateralmente para esquerda
+    delay(350);                        // Aguarda 350 ms
+  } else if (ballDirecao > 5 && UDir.read() >= 40) { // Se bola está à direita e há espaço lateral
+    lateral("d", 140);                 // Move lateralmente para direita
     delay(350);
   } else {
-    parar();
+    parar();                           // Se não precisa ajustar, para os motores
   }
 }
