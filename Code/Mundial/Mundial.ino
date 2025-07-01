@@ -47,8 +47,8 @@ char quebra;                      // Caractere para quebra de linha ou estado
 
 // Velocidade
 const int VeloCurva = 55;    // Velocidade para curva à esquerda
-const int VeloCurvaD = 70;   // Velocidade para curva à direita
-const int VeloFrente = 110;  // Velocidade para andar para frente
+const int VeloCurvaD = 45;   // Velocidade para curva à direita
+const int VeloFrente = 145;  // Velocidade para andar para frente
 
 // Refletância
 const int FrtR = A0;  // Sensor de refletância frontal
@@ -61,7 +61,8 @@ int refletancia;      // Valor lido da refletância
 // Ultrassônico
 int distance;      // Distância medida pelos sensores ultrassônicos
 int PLado = 70;    // Ponto de referência lateral
-int PFrente = 55;  // Ponto de referência frontal
+int PFrente = 70;  // Ponto de referência frontal
+int ParedeLados = 80;
 
 // Infravermelho
 int ballDirecao;      // Direção da bola detectada pelo sensor infravermelho
@@ -78,7 +79,7 @@ void setup() {
 
   Serial.println("Iniciando...");
 
-  dribler("On", 220);  // Liga o dribler com velocidade 220
+  dribler("On", 255);  // Liga o dribler com velocidade 220
 
   // Configuração dos sensores e chaves
   pinMode(chavecurso, INPUT);
@@ -120,10 +121,11 @@ void setup() {
 }
 
 void loop() {
+  conduzirBola(120);
   //goleiro();  // Função para lógica do goleiro (está comentada, não executa)
   //teste();     // Função de teste dos sensores e atuadores (está comentada)
-  atacante();  // Função para executar a lógica do atacante
-  // SeguirBola(); // Função para seguir a bola (está comentada)
+  //atacante();  // Função para executar a lógica do atacante
+  //SeguirBola(); // Função para seguir a bola (está comentada)
 }
 
 void teste() {
