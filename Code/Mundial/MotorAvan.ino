@@ -1,14 +1,26 @@
 void conduzirBola(int velocidadeBase) {
-  const float Kp = 7.0;  // Ajuste conforme necessário
+  const float Kp = 2.0;  // Ajuste conforme necessário
   const float Ki = 0.05;
   const float Kd = 8.0;
   float erroAnterior = 0.0;
   float somaErro = 0.0;
 
   ReadCompassSensor();        // Lê a posição atual antes de começar
-  int headingAlvo = Bussola;  // Salva a posição atual como objetivo fixo
+  int headingAlvo = gol;  // Salva a posição atual como objetivo fixo
 
-  while (UFrt.read() >= PFrente) {  // Loop infinito até ser interrompido externamente
+  Serial.println("Primeiro");
+
+  while (1) {
+    if (Bussola == gol || (Bussola >= BMin && Bussola <= BMax)) {
+      parar();
+      delay(250);
+      break;
+    } else {
+      alinhar();
+    }
+  }
+
+  while (UFrt.read() >= PFrente && (digitalRead(chavecurso) == 1)) {  // Loop infinito até ser interrompido externamente
     ReadCompassSensor();            // Atualiza leitura da bússola
 
     float erro = calcularErroAngular(Bussola, headingAlvo);  // Calcula erro para manter direção inicial
@@ -33,11 +45,22 @@ void conduzirBola(int velocidadeBase) {
     delay(30);
   }
 
-  if (UEsq.read() <= PLado && UDir.read() >= PLado) {
-    lateralAlinhadaPID("d", 100);
-  } else if (UDir.read() <= PLado && UEsq.read() >= PLado) {
-    lateralAlinhadaPID("e", 100);
+  Serial.println("Segundo");
+
+  int LEsq = UEsq.read();
+  int LDrt = UDir.read();
+
+  if (LDrt <= PLado && LEsq >= PLado) {
+    Serial.println(LDrt);
+    lateralAlinhadaPID("e", 110);
   }
+
+  if (LEsq <= PLado && LDrt >= PLado) {
+    Serial.println(LEsq);
+    lateralAlinhadaPID("d", 110);
+  }
+
+  Serial.println("Terceiro");
 
   while (1) {
     if (Bussola == gol || (Bussola >= BMin && Bussola <= BMax)) {
@@ -50,8 +73,6 @@ void conduzirBola(int velocidadeBase) {
   }
 
   chutar();
-
-  delay(100000);
 }
 
 void lateralAlinhadaPID(String lado, int velocidadeBase) {
@@ -64,7 +85,7 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
   ReadCompassSensor();
   int headingAlvo = gol;
 
-  while (true) {
+  while (true && (digitalRead(chavecurso) == 1)) {
     ReadCompassSensor();
 
     float erro = calcularErroAngular(Bussola, headingAlvo);
@@ -80,7 +101,7 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
 
     if (lado == "e") {
       // Move obrigatoriamente para a esquerda enquanto a distância do lado esquerdo for maior que PLado
-      if (UDir.read() <= ParedeLados && UEsq.read() >= 100) {
+      if (UDir.read() <= ParedeLados) {
         lateral("e", (velEsq + velDir) / 2);
       } else {
         while (1) {
@@ -96,7 +117,7 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
       }
     } else if (lado == "d") {
       // Move obrigatoriamente para a direita enquanto a distância do lado direito for maior que PLado
-      if (UEsq.read() <= ParedeLados && UDir.read() >= 100) {
+      if (UEsq.read() <= ParedeLados) {
         lateral("d", (velEsq + velDir) / 2);
       } else {
         while (1) {

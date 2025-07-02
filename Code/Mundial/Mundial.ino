@@ -121,10 +121,10 @@ void setup() {
 }
 
 void loop() {
-  conduzirBola(120);
+  //conduzirBola(120);
   //goleiro();  // Função para lógica do goleiro (está comentada, não executa)
   //teste();     // Função de teste dos sensores e atuadores (está comentada)
-  //atacante();  // Função para executar a lógica do atacante
+  atacante();  // Função para executar a lógica do atacante
   //SeguirBola(); // Função para seguir a bola (está comentada)
 }
 

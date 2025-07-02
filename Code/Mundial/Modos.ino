@@ -2,7 +2,7 @@ void atacante() {
   SeguirBola();  // Função que faz o robô seguir a bola detectada pelo sensor infravermelho
 
   if (digitalRead(chavecurso) == 1) {  // Se a chave física estiver pressionada
-    alinhar();  // Executa a função de alinhamento com o gol
+    conduzirBola(140);  // Executa a função de alinhamento com o gol
   }
 }
 
