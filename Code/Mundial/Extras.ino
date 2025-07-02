@@ -42,29 +42,55 @@ void SeguirBola() {
 }
 
 void chutar() {
-  // Avança rapidamente para dar o chute
-  frente(180);
-  delay(100);
+  const float Kp = 2.0;
+  const float Ki = 0.05;
+  const float Kd = 8.0;
+  float erroAnterior = 0.0;
+  float somaErro = 0.0;
 
-  // Liga o dribler em reverso (para empurrar a bola)
+  const unsigned long tempoLimite = 3000;  // Tempo máximo do chute
+  unsigned long inicio = millis();
+
+  ReadCompassSensor();
+  int headingAlvo = gol;  // Objetivo: direção do gol
+
+  // Já liga o dribler em reverso ANTES de começar a andar
   analogWrite(ENA_DRIBLER, 255);
   digitalWrite(IN1_DRIBLER, LOW);
   digitalWrite(IN2_DRIBLER, HIGH);
 
-  bool ativado = true;
-  for (int i = 1; i <= 50; i++) {
-    if (ativado = true) {
-      refletancia = analogRead(FrtR);
-      if (UFrt.read() <= 30 || (refletancia >= BMin && refletancia <= BMax)) {
-        ativado = true;
-        parar();
-      }
-      delay(20);
+  while ((millis() - inicio) < tempoLimite) {
+    ReadCompassSensor();
+
+    float erro = calcularErroAngular(Bussola, headingAlvo);
+    somaErro += erro;
+    float derivada = erro - erroAnterior;
+    erroAnterior = erro;
+
+    float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
+    ajuste = constrain(ajuste, -100, 100);
+
+    int velEsq = constrain(200 - ajuste, 0, 255);
+    int velDir = constrain(200 + ajuste, 0, 255);
+
+    setMotoresFrente(velEsq, velDir);
+
+    // Critério de parada imediato se algo estiver muito próximo à frente
+    if (UFrt.read() <= 30) {
+      break;
     }
+
+    delay(30);
   }
 
-  tras(150);
-  delay(400);
-  parar();
+  // Após avançar: recua um pouco para se reposicionar
+  tras(200);
+  delay(300);
+
+  // Volta o dribler ao modo normal (rodando para segurar bola)
   dribler("On", 255);
+
+  parar();
+
+  delay(450);
 }

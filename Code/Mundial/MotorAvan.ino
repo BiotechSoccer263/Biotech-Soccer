@@ -5,7 +5,7 @@ void conduzirBola(int velocidadeBase) {
   float erroAnterior = 0.0;
   float somaErro = 0.0;
 
-  ReadCompassSensor();        // Lê a posição atual antes de começar
+  ReadCompassSensor();    // Lê a posição atual antes de começar
   int headingAlvo = gol;  // Salva a posição atual como objetivo fixo
 
   Serial.println("Primeiro");
@@ -21,7 +21,7 @@ void conduzirBola(int velocidadeBase) {
   }
 
   while (UFrt.read() >= PFrente && (digitalRead(chavecurso) == 1)) {  // Loop infinito até ser interrompido externamente
-    ReadCompassSensor();            // Atualiza leitura da bússola
+    ReadCompassSensor();                                              // Atualiza leitura da bússola
 
     float erro = calcularErroAngular(Bussola, headingAlvo);  // Calcula erro para manter direção inicial
     somaErro += erro;
@@ -45,7 +45,7 @@ void conduzirBola(int velocidadeBase) {
     delay(30);
   }
 
-  Serial.println("Segundo");
+  if (digitalRead(chavecurso) == 0) { return; }
 
   int LEsq = UEsq.read();
   int LDrt = UDir.read();
@@ -54,7 +54,6 @@ void conduzirBola(int velocidadeBase) {
     Serial.println(LDrt);
     lateralAlinhadaPID("e", 110);
   }
-
   if (LEsq <= PLado && LDrt >= PLado) {
     Serial.println(LEsq);
     lateralAlinhadaPID("d", 110);
@@ -71,6 +70,8 @@ void conduzirBola(int velocidadeBase) {
       alinhar();
     }
   }
+
+  if (digitalRead(chavecurso) == 0) { return; }
 
   chutar();
 }
@@ -101,7 +102,7 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
 
     if (lado == "e") {
       // Move obrigatoriamente para a esquerda enquanto a distância do lado esquerdo for maior que PLado
-      if (UDir.read() <= ParedeLados) {
+      if (UDir.read() <= (ParedeLados + 10)) {
         lateral("e", (velEsq + velDir) / 2);
       } else {
         while (1) {
@@ -139,8 +140,11 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
   parar();
 }
 
-float calcularErroAngular(int atual, int objetivo) {
-  int erro = atual - objetivo;
+float calcularErroAngular(int atual, int alvo) {
+  int erro = atual - alvo;
+
+  // Garante que erro fique em [-180, +180]
+  erro = (erro + 540) % 360 - 180;
   return erro;
 }
 
