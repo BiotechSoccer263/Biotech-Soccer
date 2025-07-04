@@ -48,14 +48,14 @@ char quebra;                      // Caractere para quebra de linha ou estado
 // Velocidade
 const int VeloCurva = 55;    // Velocidade para curva à esquerda
 const int VeloCurvaD = 45;   // Velocidade para curva à direita
-const int VeloFrente = 145;  // Velocidade para andar para frente
+const int VeloFrente = 125;  // Velocidade para andar para frente
 
 // Refletância
 const int FrtR = A0;  // Sensor de refletância frontal
 const int EsqR = A2;  // Sensor de refletância esquerdo
 const int DirR = A3;  // Sensor de refletância direito
 int BrancoMin = 15;   // Valor mínimo para cor branca
-int BrancoMax = 200;  // Valor máximo para cor branca
+int BrancoMax = 300;  // Valor máximo para cor branca
 int refletancia;      // Valor lido da refletância
 
 // Ultrassônico
@@ -121,10 +121,10 @@ void setup() {
 }
 
 void loop() {
-  //conduzirBola(120);
-  //goleiro();  // Função para lógica do goleiro (está comentada, não executa)
+  //conduzirBola(150);
+  goleiro();  // Função para lógica do goleiro (está comentada, não executa)
   //teste();     // Função de teste dos sensores e atuadores (está comentada)
-  atacante();  // Função para executar a lógica do atacante
+  //atacante();  // Função para executar a lógica do atacante
   //SeguirBola(); // Função para seguir a bola (está comentada)
 }
 

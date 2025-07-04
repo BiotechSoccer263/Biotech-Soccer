@@ -4,15 +4,36 @@ void SeguirBola() {
   ballDirecao = InfraredBall.Direction;
   ballIntensi = InfraredBall.Strength;
 
-  // Lê o estado da chave e a refletância do sensor frontal
-  int chave = digitalRead(chavecurso);
-  refletancia = analogRead(FrtR);
+  // Lê refletâncias
+  int refletanciaFrt = analogRead(FrtR);
+  // int refletanciaEsq = analogRead(EsqR);
+  // int refletanciaDir = analogRead(DirR);
 
-  // Se detectar faixa branca à frente (usado para não sair da área)
-  if (refletancia <= BrancoMax && refletancia >= BrancoMin) {
-    tras(150);   // Move o robô para trás
-    delay(350);  // Espera 350ms
-    return;      // Sai da função, não executa o resto
+  // Se qualquer sensor detectar faixa branca (para não sair da área)
+  bool linhaDetectadaFrt = (refletanciaFrt >= BrancoMin && refletanciaFrt <= BrancoMax);
+  // bool linhaDetectadaEsq = (refletanciaEsq >= BrancoMin && refletanciaEsq <= BrancoMax);
+  // bool linhaDetectadaDir = (refletanciaDir >= BrancoMin && refletanciaDir <= BrancoMax);
+
+  // if (linhaDetectadaEsq && !linhaDetectadaDir && !linhaDetectadaFrt) {
+  //   tras(110);
+  //   delay(350);
+  //   rotacionar("d", 90);  // Fugir para o lado oposto ao que detectou
+  //   delay(200);
+  //   return;
+  // }
+
+  // if (linhaDetectadaDir && !linhaDetectadaEsq && !linhaDetectadaFrt) {
+  //   tras(110);
+  //   delay(350);
+  //   rotacionar("e", 90);  // Fugir para o lado oposto ao que detectou
+  //   delay(200);
+  //   return;
+  // }
+
+  if (linhaDetectadaFrt) {
+    tras(110);
+    delay(350);
+    return;
   }
 
   // Mostra no Serial a intensidade e direção da bola
@@ -37,8 +58,6 @@ void SeguirBola() {
   else if (ballDirecao == 0 || ballIntensi <= 10) {
     frente(VeloFrente);  // Continua indo para frente para procurar a bola
   }
-
-  delay(100);  // Pausa para evitar atualizações muito rápidas
 }
 
 void chutar() {
@@ -85,7 +104,56 @@ void chutar() {
 
   // Após avançar: recua um pouco para se reposicionar
   tras(200);
-  delay(300);
+  delay(400);
+
+  // Volta o dribler ao modo normal (rodando para segurar bola)
+  dribler("On", 255);
+
+  parar();
+
+  delay(450);
+}
+
+void chutargoleiro() {
+  const float Kp = 2.0;
+  const float Ki = 0.05;
+  const float Kd = 8.0;
+  float erroAnterior = 0.0;
+  float somaErro = 0.0;
+
+  const unsigned long tempoLimite = 1000;  // Tempo máximo do chute
+  unsigned long inicio = millis();
+
+  ReadCompassSensor();
+  int headingAlvo = gol;  // Objetivo: direção do gol
+
+  // Já liga o dribler em reverso ANTES de começar a andar
+  analogWrite(ENA_DRIBLER, 255);
+  digitalWrite(IN1_DRIBLER, LOW);
+  digitalWrite(IN2_DRIBLER, HIGH);
+
+  while ((millis() - inicio) < tempoLimite) {
+    ReadCompassSensor();
+
+    float erro = calcularErroAngular(Bussola, headingAlvo);
+    somaErro += erro;
+    float derivada = erro - erroAnterior;
+    erroAnterior = erro;
+
+    float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
+    ajuste = constrain(ajuste, -100, 100);
+
+    int velEsq = constrain(100 - ajuste, 0, 255);
+    int velDir = constrain(100 + ajuste, 0, 255);
+
+    setMotoresFrente(velEsq, velDir);
+
+    delay(30);
+  }
+
+  // Após avançar: recua um pouco para se reposicionar
+  tras(200);
+  delay(200);
 
   // Volta o dribler ao modo normal (rodando para segurar bola)
   dribler("On", 255);

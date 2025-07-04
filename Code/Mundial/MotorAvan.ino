@@ -8,8 +8,6 @@ void conduzirBola(int velocidadeBase) {
   ReadCompassSensor();    // Lê a posição atual antes de começar
   int headingAlvo = gol;  // Salva a posição atual como objetivo fixo
 
-  Serial.println("Primeiro");
-
   while (1) {
     if (Bussola == gol || (Bussola >= BMin && Bussola <= BMax)) {
       parar();
@@ -20,8 +18,10 @@ void conduzirBola(int velocidadeBase) {
     }
   }
 
-  while (UFrt.read() >= PFrente && (digitalRead(chavecurso) == 1)) {  // Loop infinito até ser interrompido externamente
-    ReadCompassSensor();                                              // Atualiza leitura da bússola
+  Serial.println("Andar");
+
+  while (UFrt.read() >= PFrente) {  // Loop infinito até ser interrompido externamente
+    ReadCompassSensor();            // Atualiza leitura da bússola
 
     float erro = calcularErroAngular(Bussola, headingAlvo);  // Calcula erro para manter direção inicial
     somaErro += erro;
@@ -34,10 +34,16 @@ void conduzirBola(int velocidadeBase) {
     int velEsq = constrain(velocidadeBase - ajuste, 0, 255);
     int velDir = constrain(velocidadeBase + ajuste, 0, 255);
 
-    if (UEsq.read() <= 15) {
-      lateral("d", 100);
-    } else if (UDir.read() <= 15) {
-      lateral("e", 100);
+    int refletanciaEsq = analogRead(EsqR);
+    int refletanciaDir = analogRead(DirR);
+
+    bool linhaDetectadaEsq = (refletanciaEsq >= BrancoMin && refletanciaEsq <= BrancoMax);
+    bool linhaDetectadaDir = (refletanciaDir >= BrancoMin && refletanciaDir <= BrancoMax);
+
+    if (linhaDetectadaEsq && !linhaDetectadaDir) {
+      lateral("d", 110);
+    }else if (linhaDetectadaDir && !linhaDetectadaEsq) {
+      lateral("e", 110);
     }
 
     setMotoresFrente(velEsq, velDir);
@@ -47,19 +53,21 @@ void conduzirBola(int velocidadeBase) {
 
   if (digitalRead(chavecurso) == 0) { return; }
 
+  int LFrt = UFrt.read();
   int LEsq = UEsq.read();
   int LDrt = UDir.read();
 
-  if (LDrt <= PLado && LEsq >= PLado) {
-    Serial.println(LDrt);
-    lateralAlinhadaPID("e", 110);
-  }
-  if (LEsq <= PLado && LDrt >= PLado) {
-    Serial.println(LEsq);
-    lateralAlinhadaPID("d", 110);
-  }
+  Serial.println("Alinhar");
 
-  Serial.println("Terceiro");
+  for (int i = 0; i < 2; i++) {
+    Serial.println("Lateral");
+    if (LDrt <= PLado && LEsq >= PLado) {
+      lateralAlinhadaPID("e", 110);
+    }
+    if (LEsq <= PLado && LDrt >= PLado) {
+      lateralAlinhadaPID("d", 110);
+    }
+  }
 
   while (1) {
     if (Bussola == gol || (Bussola >= BMin && Bussola <= BMax)) {
@@ -71,9 +79,13 @@ void conduzirBola(int velocidadeBase) {
     }
   }
 
-  if (digitalRead(chavecurso) == 0) { return; }
+  Serial.println("Chutar");
 
-  chutar();
+  if (digitalRead(chavecurso) == 0) {
+    return;
+  } else {
+    chutar();
+  }
 }
 
 void lateralAlinhadaPID(String lado, int velocidadeBase) {
