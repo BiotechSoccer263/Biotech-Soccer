@@ -143,8 +143,8 @@ void chutargoleiro() {
     float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
     ajuste = constrain(ajuste, -100, 100);
 
-    int velEsq = constrain(100 - ajuste, 0, 255);
-    int velDir = constrain(100 + ajuste, 0, 255);
+    int velEsq = constrain(120 - ajuste, 0, 255);
+    int velDir = constrain(120 + ajuste, 0, 255);
 
     setMotoresFrente(velEsq, velDir);
 

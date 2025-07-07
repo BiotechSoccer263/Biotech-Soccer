@@ -31,7 +31,7 @@ const int IN2_DRIBLER = 17;  // Entrada 2 ponte H do dribler
 
 // Controle e estados
 boolean PrimeiraLeitura = true;  // Se é a primeira leitura do sensor
-boolean Sensores = true;         // Se os sensores estão ativados
+boolean Sensores = true;        // Se os sensores estão ativados
 boolean Alinhado = false;        // Se o robô está alinhado
 int estado;                      // Estado atual do robô
 int Modo = 1;                    // Modo de operação do robô
@@ -72,6 +72,7 @@ int IntensiMin = 80;  // Intensidade mínima para considerar a bola detectada
 // Chaves
 const int chavecurso = 28;    // Pino para a chave de início/curso
 int leituraSensores = false;  // Estado de leitura dos sensores
+int robo;
 
 void setup() {
   Serial.begin(9600);  // Inicializa comunicação serial
@@ -121,11 +122,8 @@ void setup() {
 }
 
 void loop() {
-  //conduzirBola(150);
-  goleiro();  // Função para lógica do goleiro (está comentada, não executa)
-  //teste();     // Função de teste dos sensores e atuadores (está comentada)
-  //atacante();  // Função para executar a lógica do atacante
-  //SeguirBola(); // Função para seguir a bola (está comentada)
+  atacante();
+  //goleiro();
 }
 
 void teste() {

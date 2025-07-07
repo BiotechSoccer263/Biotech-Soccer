@@ -42,7 +42,7 @@ void conduzirBola(int velocidadeBase) {
 
     if (linhaDetectadaEsq && !linhaDetectadaDir) {
       lateral("d", 110);
-    }else if (linhaDetectadaDir && !linhaDetectadaEsq) {
+    } else if (linhaDetectadaDir && !linhaDetectadaEsq) {
       lateral("e", 110);
     }
 
@@ -54,13 +54,16 @@ void conduzirBola(int velocidadeBase) {
   if (digitalRead(chavecurso) == 0) { return; }
 
   int LFrt = UFrt.read();
-  int LEsq = UEsq.read();
-  int LDrt = UDir.read();
 
   Serial.println("Alinhar");
 
-  for (int i = 0; i < 2; i++) {
-    Serial.println("Lateral");
+  for (int i = 0; i < 3; i++) {
+    int LEsq = UEsq.read();
+    int LDrt = UDir.read();
+    if (LDrt > 255) {
+      LDrt = UDir.read();
+    }
+
     if (LDrt <= PLado && LEsq >= PLado) {
       lateralAlinhadaPID("e", 110);
     }
@@ -174,6 +177,24 @@ void setMotoresFrente(int velEsq, int velDir) {
   digitalWrite(IN2_DIR, HIGH);
   digitalWrite(IN3_DIR, HIGH);
   digitalWrite(IN4_DIR, LOW);
+  analogWrite(ENA_DIR, velDir);
+  analogWrite(ENB_DIR, velDir);
+}
+
+void setMotoresTras(int velEsq, int velDir) {
+  // Motores esquerdos
+  digitalWrite(IN1_ESQ, HIGH);
+  digitalWrite(IN2_ESQ, LOW);
+  digitalWrite(IN3_ESQ, LOW);
+  digitalWrite(IN4_ESQ, HIGH);
+  analogWrite(ENA_ESQ, velEsq);
+  analogWrite(ENB_ESQ, velEsq);
+
+  // Motores direitos
+  digitalWrite(IN1_DIR, HIGH);
+  digitalWrite(IN2_DIR, LOW);
+  digitalWrite(IN3_DIR, LOW);
+  digitalWrite(IN4_DIR, HIGH);
   analogWrite(ENA_DIR, velDir);
   analogWrite(ENB_DIR, velDir);
 }
