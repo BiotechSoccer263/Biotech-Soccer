@@ -122,10 +122,8 @@ void setup() {
 }
 
 void loop() {
-  atacante();
-  return;
-  atacante();
-  //goleiro();
+  //atacante();
+  goleiro();
 }
 
 void teste() {

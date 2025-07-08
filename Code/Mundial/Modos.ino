@@ -31,9 +31,9 @@ void goleiro() {
     chutargoleiro();
   }
 
-  if (ballDirecao < 5 && UEsq.read() >= 35) {
+  if (ballDirecao < 5 && UEsq.read() >= 25) {
     lateralPID("e", 110, 500);
-  } else if (ballDirecao > 5 && UDir.read() >= 35) {
+  } else if (ballDirecao > 5 && UDir.read() >= 25) {
     lateralPID("d", 110, 500);
   } else if (ballDirecao == 5 && UTrs.read() <= 65) {
     corrigirAlinhamento(gol);
