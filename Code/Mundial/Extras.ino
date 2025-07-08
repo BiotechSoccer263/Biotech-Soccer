@@ -121,7 +121,7 @@ void chutargoleiro() {
   float erroAnterior = 0.0;
   float somaErro = 0.0;
 
-  const unsigned long tempoLimite = 1000;  // Tempo máximo do chute
+  const unsigned long tempoLimite = 1500;  // Tempo máximo do chute
   unsigned long inicio = millis();
 
   ReadCompassSensor();

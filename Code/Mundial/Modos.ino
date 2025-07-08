@@ -36,6 +36,7 @@ void goleiro() {
   } else if (ballDirecao > 5 && UDir.read() >= 35) {
     lateralPID("d", 110, 500);
   } else if (ballDirecao == 5 && UTrs.read() <= 65) {
+    corrigirAlinhamento(gol);
     frentePID(140, 250);
   }
 }
@@ -94,8 +95,8 @@ void manterDistanciaTrasPID(int velocidadeBase) {
 void corrigirAlinhamento(int alvo) {
   ReadCompassSensor();
 
-  int BX = alvo + 2;
-  int BN = alvo - 2;
+  int BX = alvo + 1;
+  int BN = alvo - 1;
 
   if (Bussola >= BN && Bussola <= BX) {
     parar();

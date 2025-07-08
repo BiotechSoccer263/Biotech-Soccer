@@ -123,6 +123,8 @@ void setup() {
 
 void loop() {
   atacante();
+  return;
+  atacante();
   //goleiro();
 }
 
