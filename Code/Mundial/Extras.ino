@@ -47,12 +47,10 @@ void SeguirBola() {
   // Se a bola está à esquerda (direção <4)
   else if (ballDirecao < 4) {
     rotacionar("e", VeloCurva);  // Rotaciona para a esquerda
-    delay(80);                   // Pequena pausa para o movimento acontecer
   }
   // Se a bola está à direita (direção >6)
   else if (ballDirecao > 6) {
     rotacionar("d", VeloCurva);  // Rotaciona para a direita
-    delay(80);
   }
   // Se não detectou a bola (direção 0 ou intensidade muito baixa)
   else if (ballDirecao == 0 || ballIntensi <= 10) {
@@ -71,12 +69,7 @@ void chutar() {
   unsigned long inicio = millis();
 
   ReadCompassSensor();
-  int headingAlvo = gol;  // Objetivo: direção do gol
-
-  // Já liga o dribler em reverso ANTES de começar a andar
-  analogWrite(ENA_DRIBLER, 255);
-  digitalWrite(IN1_DRIBLER, LOW);
-  digitalWrite(IN2_DRIBLER, HIGH);
+  int headingAlvo = gol + 10;  // Objetivo: direção do gol
 
   while ((millis() - inicio) < tempoLimite) {
     ReadCompassSensor();
@@ -89,10 +82,16 @@ void chutar() {
     float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
     ajuste = constrain(ajuste, -100, 100);
 
-    int velEsq = constrain(200 - ajuste, 0, 255);
-    int velDir = constrain(200 + ajuste, 0, 255);
+    int velEsq = constrain(150 - ajuste, 0, 200);
+    int velDir = constrain(150 + ajuste, 0, 200);
 
     setMotoresFrente(velEsq, velDir);
+
+    if ((millis() - inicio) > (tempoLimite / 2)) {
+      analogWrite(ENA_DRIBLER, 225);
+      digitalWrite(IN1_DRIBLER, LOW);
+      digitalWrite(IN2_DRIBLER, HIGH);
+    }
 
     // Critério de parada imediato se algo estiver muito próximo à frente
     if (UFrt.read() <= 30) {
@@ -102,16 +101,18 @@ void chutar() {
     delay(30);
   }
 
-  // Após avançar: recua um pouco para se reposicionar
-  tras(200);
-  delay(400);
-
-  // Volta o dribler ao modo normal (rodando para segurar bola)
-  dribler("On", 255);
+  analogWrite(ENA_DRIBLER, 225);
+  digitalWrite(IN1_DRIBLER, LOW);
+  digitalWrite(IN2_DRIBLER, HIGH);
 
   parar();
+  delay(100);
+  tras(150);
+  delay(400);
 
-  delay(450);
+  parar();
+  dribler("On", 225);
+  delay(150);
 }
 
 void chutargoleiro() {

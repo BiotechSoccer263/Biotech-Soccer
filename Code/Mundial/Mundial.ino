@@ -112,6 +112,7 @@ void setup() {
   Serial.println("Motores ok!");
 
   if (Sensores == true) {
+    Serial.println("Sensores");
     InfraredSeeker::Initialize();  // Inicializa sensor infravermelho HiTechnic
     ReadCompassSensor();           // Lê o valor da bússola
     Serial.println("Sensores HiTech!");
@@ -122,8 +123,8 @@ void setup() {
 }
 
 void loop() {
-  //atacante();
-  goleiro();
+  atacante();
+  //goleiro();
 }
 
 void teste() {
