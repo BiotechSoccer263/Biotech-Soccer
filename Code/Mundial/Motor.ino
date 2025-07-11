@@ -87,36 +87,49 @@ void rotacionar(String lado, int velocidade) {
 
 void lateral(String lado, int velocidade) {
   if (lado == "e") {  // Movimento lateral para ESQUERDA
-    // Motores do lado esquerdo para frente e do lado direito para trás (movimento diagonal)
-    digitalWrite(IN1_ESQ, LOW);
-    digitalWrite(IN2_ESQ, HIGH);
-    digitalWrite(IN3_ESQ, LOW);
-    digitalWrite(IN4_ESQ, HIGH);
     analogWrite(ENA_ESQ, velocidade);
     analogWrite(ENB_ESQ, velocidade);
+    analogWrite(ENA_DIR, velocidade);
+    analogWrite(ENB_DIR, velocidade);
+
+    if (robo == 1) {
+      digitalWrite(IN1_ESQ, LOW);
+      digitalWrite(IN2_ESQ, HIGH);
+      digitalWrite(IN3_ESQ, LOW);
+      digitalWrite(IN4_ESQ, HIGH);
+    } else {
+      digitalWrite(IN1_ESQ, HIGH);
+      digitalWrite(IN2_ESQ, LOW);
+      digitalWrite(IN3_ESQ, HIGH);
+      digitalWrite(IN4_ESQ, LOW);
+    }
 
     digitalWrite(IN1_DIR, LOW);
     digitalWrite(IN2_DIR, HIGH);
     digitalWrite(IN3_DIR, LOW);
     digitalWrite(IN4_DIR, HIGH);
+  } else if (lado == "d") {  // Movimento lateral para DIREITA
+    analogWrite(ENA_ESQ, velocidade);
+    analogWrite(ENB_ESQ, velocidade);
     analogWrite(ENA_DIR, velocidade);
     analogWrite(ENB_DIR, velocidade);
 
-  } else if (lado == "d") {  // Movimento lateral para DIREITA
-    // Motores do lado esquerdo para trás e do lado direito para frente (movimento diagonal)
-    digitalWrite(IN1_ESQ, HIGH);
-    digitalWrite(IN2_ESQ, LOW);
-    digitalWrite(IN3_ESQ, HIGH);
-    digitalWrite(IN4_ESQ, LOW);
-    analogWrite(ENA_ESQ, velocidade);
-    analogWrite(ENB_ESQ, velocidade);
+    if (robo == 1) {
+      digitalWrite(IN1_ESQ, HIGH);
+      digitalWrite(IN2_ESQ, LOW);
+      digitalWrite(IN3_ESQ, HIGH);
+      digitalWrite(IN4_ESQ, LOW);
+    } else {
+      digitalWrite(IN1_ESQ, LOW);
+      digitalWrite(IN2_ESQ, HIGH);
+      digitalWrite(IN3_ESQ, LOW);
+      digitalWrite(IN4_ESQ, HIGH);
+    }
 
     digitalWrite(IN1_DIR, HIGH);
     digitalWrite(IN2_DIR, LOW);
     digitalWrite(IN3_DIR, HIGH);
     digitalWrite(IN4_DIR, LOW);
-    analogWrite(ENA_DIR, velocidade);
-    analogWrite(ENB_DIR, velocidade);
   }
 }
 
@@ -129,11 +142,11 @@ void lateralPID(String lado, int velocidadeBase, unsigned long tempoMovimento) {
   float somaErro = 0.0;
 
   ReadCompassSensor();
-  int headingAlvo = gol - 10;
+  const int headingAlvo = gol;  // fixa o alvo
 
-  unsigned long tempoInicio = millis();
+  const unsigned long tempoInicio = millis();
 
-  while ((millis() - tempoInicio) < tempoMovimento) {
+  while (millis() - tempoInicio < tempoMovimento) {
     ReadCompassSensor();
 
     float erro = calcularErroAngular(Bussola, headingAlvo);
@@ -144,19 +157,20 @@ void lateralPID(String lado, int velocidadeBase, unsigned long tempoMovimento) {
     float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
     ajuste = constrain(ajuste, -100, 100);
 
-    if (lado == "e") {
-      // if (UEsq.read() <= 35) {break;}
-      int velEsq = constrain(velocidadeBase - ajuste, 0, 255);
-      int velDir = constrain(velocidadeBase + ajuste, 0, 255);
-      lateralgoleiro("e", velEsq, velDir);
-    } else if (lado == "d") {
-      //if (UDir.read() <= 35) {break;}
-      int velEsq = constrain(velocidadeBase + ajuste, 0, 255);
-      int velDir = constrain(velocidadeBase - ajuste, 0, 255);
-      lateralgoleiro("d", velEsq, velDir);
-    }
+    int velEsq = constrain(velocidadeBase - ajuste, 0, 255);
+    int velDir = constrain(velocidadeBase + ajuste, 0, 255);
 
-    delay(30);
+    /* ---------- chamada correta de acordo com o lado ---------- */
+    if (lado == "e") {
+      lateral("e", (velEsq + velDir) / 2);  // move para a esquerda
+    } else if (lado == "d") {
+      rotacionar("d", 100);
+      delay(2);
+      lateral("d", (velEsq + velDir) / 2);  // move para a direita
+    }
+    /* --------------------------------------------------------- */
+
+    delay(30);  // ~33 Hz
   }
 
   parar();
@@ -164,34 +178,49 @@ void lateralPID(String lado, int velocidadeBase, unsigned long tempoMovimento) {
 
 void lateralgoleiro(String lado, int esquerda, int direita) {
   if (lado == "e") {
-    digitalWrite(IN1_ESQ, LOW);
-    digitalWrite(IN2_ESQ, HIGH);
-    digitalWrite(IN3_ESQ, LOW);
-    digitalWrite(IN4_ESQ, HIGH);
     analogWrite(ENA_ESQ, esquerda);
     analogWrite(ENB_ESQ, esquerda);
+    analogWrite(ENA_DIR, direita);
+    analogWrite(ENB_DIR, direita);
+
+    if (robo == 1) {
+      digitalWrite(IN1_ESQ, LOW);
+      digitalWrite(IN2_ESQ, HIGH);
+      digitalWrite(IN3_ESQ, LOW);
+      digitalWrite(IN4_ESQ, HIGH);
+    } else {
+      digitalWrite(IN1_ESQ, HIGH);
+      digitalWrite(IN2_ESQ, LOW);
+      digitalWrite(IN3_ESQ, HIGH);
+      digitalWrite(IN4_ESQ, LOW);
+    }
 
     digitalWrite(IN1_DIR, LOW);
     digitalWrite(IN2_DIR, HIGH);
     digitalWrite(IN3_DIR, LOW);
     digitalWrite(IN4_DIR, HIGH);
+  } else if (lado == "d") {
+    analogWrite(ENA_ESQ, esquerda);
+    analogWrite(ENB_ESQ, esquerda);
     analogWrite(ENA_DIR, direita);
     analogWrite(ENB_DIR, direita);
 
-  } else if (lado == "d") {
-    digitalWrite(IN1_ESQ, HIGH);
-    digitalWrite(IN2_ESQ, LOW);
-    digitalWrite(IN3_ESQ, HIGH);
-    digitalWrite(IN4_ESQ, LOW);
-    analogWrite(ENA_ESQ, esquerda);
-    analogWrite(ENB_ESQ, esquerda);
+    if (robo == 1) {
+      digitalWrite(IN1_ESQ, HIGH);
+      digitalWrite(IN2_ESQ, LOW);
+      digitalWrite(IN3_ESQ, HIGH);
+      digitalWrite(IN4_ESQ, LOW);
+    } else {
+      digitalWrite(IN1_ESQ, LOW);
+      digitalWrite(IN2_ESQ, HIGH);
+      digitalWrite(IN3_ESQ, LOW);
+      digitalWrite(IN4_ESQ, HIGH);
+    }
 
     digitalWrite(IN1_DIR, HIGH);
     digitalWrite(IN2_DIR, LOW);
     digitalWrite(IN3_DIR, HIGH);
     digitalWrite(IN4_DIR, LOW);
-    analogWrite(ENA_DIR, direita);
-    analogWrite(ENB_DIR, direita);
   }
 }
 
@@ -203,7 +232,7 @@ void frentePID(int velocidadeBase, unsigned long tempoMovimento) {
   float somaErro = 0.0;
 
   ReadCompassSensor();
-  int headingAlvo = gol + 10;
+  int headingAlvo = gol;
 
   unsigned long tempoInicio = millis();
 

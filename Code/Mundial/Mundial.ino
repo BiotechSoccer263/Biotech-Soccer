@@ -31,10 +31,9 @@ const int IN2_DRIBLER = 17;  // Entrada 2 ponte H do dribler
 
 // Controle e estados
 boolean PrimeiraLeitura = true;  // Se é a primeira leitura do sensor
-boolean Sensores = true;        // Se os sensores estão ativados
+boolean Sensores = true;         // Se os sensores estão ativados
 boolean Alinhado = false;        // Se o robô está alinhado
 int estado;                      // Estado atual do robô
-int Modo = 1;                    // Modo de operação do robô
 
 // Bússola
 const int compassAddress = 0x01;  // Endereço I2C da bússola
@@ -46,9 +45,9 @@ int BMin;                         // Valor mínimo da bússola
 char quebra;                      // Caractere para quebra de linha ou estado
 
 // Velocidade
-const int VeloCurva = 55;    // Velocidade para curva à esquerda
-const int VeloCurvaD = 45;   // Velocidade para curva à direita
-const int VeloFrente = 125;  // Velocidade para andar para frente
+int VeloCurva = 55;    // Velocidade para curva à esquerda
+int VeloCurvaD = 45;   // Velocidade para curva à direita
+int VeloFrente = 125;  // Velocidade para andar para frente
 
 // Refletância
 const int FrtR = A0;  // Sensor de refletância frontal
@@ -72,13 +71,24 @@ int IntensiMin = 80;  // Intensidade mínima para considerar a bola detectada
 // Chaves
 const int chavecurso = 28;    // Pino para a chave de início/curso
 int leituraSensores = false;  // Estado de leitura dos sensores
-int robo;
+int modo = 1;
+int robo = 2;
 
 void setup() {
   Serial.begin(9600);  // Inicializa comunicação serial
   Wire.begin();        // Inicializa comunicação I2C
 
   Serial.println("Iniciando...");
+
+  if (robo == 1) {
+    VeloCurva = 55;
+    VeloCurvaD = 45;
+    VeloFrente = 125;
+  } else {
+    VeloCurva = 70;
+    VeloCurvaD = 60;
+    VeloFrente = 135;
+  }
 
   dribler("On", 255);  // Liga o dribler com velocidade 220
 
@@ -123,8 +133,8 @@ void setup() {
 }
 
 void loop() {
-  atacante();
-  //goleiro();
+  //atacante();
+  goleiro();
 }
 
 void teste() {

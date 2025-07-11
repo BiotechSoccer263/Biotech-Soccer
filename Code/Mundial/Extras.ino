@@ -31,7 +31,9 @@ void SeguirBola() {
   // }
 
   if (linhaDetectadaFrt) {
-    tras(110);
+    parar();
+    delay(50);
+    tras(VeloFrente);
     delay(350);
     return;
   }
@@ -69,7 +71,7 @@ void chutar() {
   unsigned long inicio = millis();
 
   ReadCompassSensor();
-  int headingAlvo = gol + 10;  // Objetivo: direção do gol
+  int headingAlvo = gol-10;  // Objetivo: direção do gol
 
   while ((millis() - inicio) < tempoLimite) {
     ReadCompassSensor();
@@ -82,8 +84,8 @@ void chutar() {
     float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
     ajuste = constrain(ajuste, -100, 100);
 
-    int velEsq = constrain(150 - ajuste, 0, 200);
-    int velDir = constrain(150 + ajuste, 0, 200);
+    int velEsq = constrain((VeloFrente+25) - ajuste, 0, 225);
+    int velDir = constrain((VeloFrente+25) + ajuste, 0, 225);
 
     setMotoresFrente(velEsq, velDir);
 
@@ -116,50 +118,13 @@ void chutar() {
 }
 
 void chutargoleiro() {
-  const float Kp = 2.0;
-  const float Ki = 0.05;
-  const float Kd = 8.0;
-  float erroAnterior = 0.0;
-  float somaErro = 0.0;
+  frentePID(200, 450);
 
-  const unsigned long tempoLimite = 500;  // Tempo máximo do chute
-  unsigned long inicio = millis();
-
-  ReadCompassSensor();
-  int headingAlvo = gol;  // Objetivo: direção do gol
-
-  // Já liga o dribler em reverso ANTES de começar a andar
   analogWrite(ENA_DRIBLER, 255);
   digitalWrite(IN1_DRIBLER, LOW);
   digitalWrite(IN2_DRIBLER, HIGH);
 
-  while ((millis() - inicio) < tempoLimite) {
-    ReadCompassSensor();
-
-    float erro = calcularErroAngular(Bussola, headingAlvo);
-    somaErro += erro;
-    float derivada = erro - erroAnterior;
-    erroAnterior = erro;
-
-    float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
-    ajuste = constrain(ajuste, -100, 100);
-
-    int velEsq = constrain(120 - ajuste, 0, 255);
-    int velDir = constrain(120 + ajuste, 0, 255);
-
-    setMotoresFrente(velEsq, velDir);
-
-    delay(30);
-  }
-
-  // Após avançar: recua um pouco para se reposicionar
-  tras(200);
-  delay(200);
-
-  // Volta o dribler ao modo normal (rodando para segurar bola)
-  dribler("On", 255);
-
   parar();
-
-  delay(450);
+  delay(100);
+  dribler("On", 225);
 }

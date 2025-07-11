@@ -17,27 +17,33 @@ void goleiro() {
   bool linhaDetectadaDir = (refletanciaDir >= BrancoMin && refletanciaDir <= BrancoMax);
 
   if (linhaDetectadaEsq && linhaDetectadaDir) {
-    frentePID(120, 250);
+    frentePID(VeloFrente, 250);
   } else if (linhaDetectadaEsq && !linhaDetectadaDir) {
-    lateralPID("d", 120, 500);
+    lateralPID("d", VeloFrente, 500);
+    return;
   } else if (linhaDetectadaDir && !linhaDetectadaEsq) {
-    lateralPID("e", 120, 500);
+    lateralPID("e", VeloFrente, 500);
+    return;
   }
 
-  manterDistanciaTrasPID(120);
-  corrigirAlinhamento(gol);
+  manterDistanciaTrasPID(VeloFrente);
+  alinhar();
 
   if (digitalRead(chavecurso) == 1) {
     chutargoleiro();
   }
 
-  if (ballDirecao < 5 && UEsq.read() >= 25) {
-    lateralPID("e", 110, 500);
-  } else if (ballDirecao > 5 && UDir.read() >= 25) {
-    lateralPID("d", 110, 500);
+  if (ballDirecao == 9 || ballDirecao == 0 || ballDirecao == 1) {
+    return;
+  }
+
+  if (ballDirecao < 5 && UEsq.read() >= 55) {
+    lateralPID("e", VeloFrente, 500);
+  } else if (ballDirecao > 5 && UDir.read() >= 55) {
+    lateralPID("d", VeloFrente, 500);
   } else if (ballDirecao == 5 && UTrs.read() <= 65) {
-    corrigirAlinhamento(gol);
-    frentePID(140, 250);
+    alinhar();
+    frentePID(VeloFrente, 250);
   }
 }
 
@@ -90,28 +96,4 @@ void manterDistanciaTrasPID(int velocidadeBase) {
   }
 
   parar();
-}
-
-void corrigirAlinhamento(int alvo) {
-  ReadCompassSensor();
-
-  int BX = alvo + 1;
-  int BN = alvo - 1;
-
-  if (Bussola >= BN && Bussola <= BX) {
-    parar();
-    return;
-  } else if (quebra == 'E') {
-    if (BN <= Bussola && Bussola < limite) {
-      rotacionar("e", VeloCurva);
-    } else {
-      rotacionar("d", VeloCurva);
-    }
-  } else {
-    if (BX >= Bussola && Bussola > limite) {
-      rotacionar("d", VeloCurva);
-    } else {
-      rotacionar("e", VeloCurva);
-    }
-  }
 }

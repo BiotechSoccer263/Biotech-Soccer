@@ -115,6 +115,8 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
     int velEsq = constrain(velocidadeBase - ajuste, 0, 255);
     int velDir = constrain(velocidadeBase + ajuste, 0, 255);
 
+    alinhar();
+
     if (lado == "e") {
       // Move obrigatoriamente para a esquerda enquanto a distância do lado esquerdo for maior que PLado
       if (UDir.read() <= (ParedeLados + 10)) {
@@ -197,41 +199,4 @@ void setMotoresTras(int velEsq, int velDir) {
   digitalWrite(IN4_DIR, HIGH);
   analogWrite(ENA_DIR, velDir);
   analogWrite(ENB_DIR, velDir);
-}
-
-void lateral(String lado, int velEsq, int velDir) {
-  if (lado == "e") {  // Lateral para ESQUERDA
-    // Motores esquerdos: para frente
-    digitalWrite(IN1_ESQ, LOW);
-    digitalWrite(IN2_ESQ, HIGH);
-    digitalWrite(IN3_ESQ, LOW);
-    digitalWrite(IN4_ESQ, HIGH);
-    analogWrite(ENA_ESQ, velEsq);
-    analogWrite(ENB_ESQ, velEsq);
-
-    // Motores direitos: para trás
-    digitalWrite(IN1_DIR, LOW);
-    digitalWrite(IN2_DIR, HIGH);
-    digitalWrite(IN3_DIR, LOW);
-    digitalWrite(IN4_DIR, HIGH);
-    analogWrite(ENA_DIR, velDir);
-    analogWrite(ENB_DIR, velDir);
-
-  } else if (lado == "d") {  // Lateral para DIREITA
-    // Motores esquerdos: para trás
-    digitalWrite(IN1_ESQ, HIGH);
-    digitalWrite(IN2_ESQ, LOW);
-    digitalWrite(IN3_ESQ, HIGH);
-    digitalWrite(IN4_ESQ, LOW);
-    analogWrite(ENA_ESQ, velEsq);
-    analogWrite(ENB_ESQ, velEsq);
-
-    // Motores direitos: para frente
-    digitalWrite(IN1_DIR, HIGH);
-    digitalWrite(IN2_DIR, LOW);
-    digitalWrite(IN3_DIR, HIGH);
-    digitalWrite(IN4_DIR, LOW);
-    analogWrite(ENA_DIR, velDir);
-    analogWrite(ENB_DIR, velDir);
-  }
 }
