@@ -165,7 +165,7 @@ void lateralPID(String lado, int velocidadeBase, unsigned long tempoMovimento) {
       lateral("e", (velEsq + velDir) / 2);  // move para a esquerda
     } else if (lado == "d") {
       rotacionar("d", 100);
-      delay(2);
+      delay(3);
       lateral("d", (velEsq + velDir) / 2);  // move para a direita
     }
     /* --------------------------------------------------------- */

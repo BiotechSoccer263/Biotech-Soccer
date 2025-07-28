@@ -2,103 +2,109 @@
 #include <Ultrasonic.h>
 #include <Wire.h>
 
-// === Ultrasonic Sensors ===
-Ultrasonic UFrt(43, 42);  // Front ultrasonic sensor
-Ultrasonic UTrs(41, 40);  // Rear ultrasonic sensor
-Ultrasonic UEsq(45, 47);  // Left ultrasonic sensor
-Ultrasonic UDir(44, 46);  // Right ultrasonic sensor
+// === Sensores Ultrassônicos ===
+Ultrasonic UFrt(43, 42);  // Sensor ultrassônico frontal
+Ultrasonic UTrs(41, 40);  // Sensor ultrassônico traseiro
+Ultrasonic UEsq(45, 47);  // Sensor ultrassônico esquerdo
+Ultrasonic UDir(44, 46);  // Sensor ultrassônico direito
 
-// === Left Side Motors ===
-const int ENA_ESQ = 2;  // Enable left motor 1
-const int ENB_ESQ = 3;  // Enable left motor 2
-const int IN1_ESQ = 4;  // H-bridge input 1 for left motor 1
-const int IN3_ESQ = 5;  // H-bridge input 3 for left motor 2
-const int IN2_ESQ = 6;  // H-bridge input 2 for left motor 1
-const int IN4_ESQ = 7;  // H-bridge input 4 for left motor 2
+// === Motores do lado esquerdo ===
+const int ENA_ESQ = 2;  // Enable motor esquerdo 1
+const int ENB_ESQ = 3;  // Enable motor esquerdo 2
+const int IN1_ESQ = 4;  // Entrada 1 ponte H motor esquerdo 1
+const int IN3_ESQ = 5;  // Entrada 3 ponte H motor esquerdo 2
+const int IN2_ESQ = 6;  // Entrada 2 ponte H motor esquerdo 1
+const int IN4_ESQ = 7;  // Entrada 4 ponte H motor esquerdo 2
 
-// === Right Side Motors ===
-const int ENA_DIR = 8;   // Enable right motor 1
-const int ENB_DIR = 9;   // Enable right motor 2
-const int IN1_DIR = 10;  // H-bridge input 1 for right motor 1
-const int IN3_DIR = 11;  // H-bridge input 3 for right motor 2
-const int IN2_DIR = 12;  // H-bridge input 2 for right motor 1
-const int IN4_DIR = 13;  // H-bridge input 4 for right motor 2
+// === Motores do lado direito ===
+const int ENA_DIR = 8;   // Enable motor direito 1
+const int ENB_DIR = 9;   // Enable motor direito 2
+const int IN1_DIR = 10;  // Entrada 1 ponte H motor direito 1
+const int IN3_DIR = 11;  // Entrada 3 ponte H motor direito 2
+const int IN2_DIR = 12;  // Entrada 2 ponte H motor direito 1
+const int IN4_DIR = 13;  // Entrada 4 ponte H motor direito 2
 
-// === Dribbler H-Bridge ===
-const int ENA_DRIBLER = 15;  // Enable dribbler motor
-const int IN1_DRIBLER = 14;  // H-bridge input 1 for dribbler
-const int IN2_DRIBLER = 17;  // H-bridge input 2 for dribbler
+// === Ponte H do Dribler ===
+const int ENA_DRIBLER = 15;  // Enable do motor do dribler
+const int IN1_DRIBLER = 14;  // Entrada 1 ponte H do dribler
+const int IN2_DRIBLER = 17;  // Entrada 2 ponte H do dribler
 
-// Control and states
-boolean PrimeiraLeitura = true;  // If it's the first sensor reading
-boolean Sensores = true;         // If sensors are enabled
-boolean Alinhado = false;        // If the robot is aligned
-int estado;                      // Current robot state
+// Controle e estados
+boolean PrimeiraLeitura = true;  // Se é a primeira leitura do sensor
+boolean Sensores = true;         // Se os sensores estão ativados
+boolean Alinhado = false;        // Se o robô está alinhado
+int estado;                      // Estado atual do robô
 
-// Compass
-const int compassAddress = 0x01;  // I2C address of the compass
-int Bussola;                      // Current compass value
-int gol;                          // Goal direction variable
-int limite;                       // Compass threshold
-int BMax;                         // Maximum compass value
-int BMin;                         // Minimum compass value
-char quebra;                      // Character for newline or state delimiter
+// Bússola
+const int compassAddress = 0x01;  // Endereço I2C da bússola
+int Bussola;                      // Valor atual da bússola
+int gol;                          // Variável para direção do gol
+int limite;                       // Limite da bússola
+int BMax;                         // Valor máximo da bússola
+int BMin;                         // Valor mínimo da bússola
+char quebra;                      // Caractere para quebra de linha ou estado
 
-// Speed
-int VeloCurva = 55;    // Speed for left turn
-int VeloCurvaD = 45;   // Speed for right turn
-int VeloFrente = 125;  // Speed to move forward
+// Velocidade
+int VeloCurva = 55;    // Velocidade para curva à esquerda
+int VeloCurvaD = 45;   // Velocidade para curva à direita
+int VeloFrente = 155;  // Velocidade para andar para frente
 
-// Reflectance
-const int FrtR = A0;  // Front reflectance sensor
-const int EsqR = A2;  // Left reflectance sensor
-const int DirR = A3;  // Right reflectance sensor
-int BrancoMin = 15;   // Minimum value for white surface
-int BrancoMax = 300;  // Maximum value for white surface
-int refletancia;      // Value read from reflectance sensor
+// Refletância
+const int FrtR = A0;  // Sensor de refletância frontal
+const int EsqR = A2;  // Sensor de refletância esquerdo
+const int DirR = A3;  // Sensor de refletância direito
+int BrancoMin = 15;   // Valor mínimo para cor branca
+int BrancoMax = 300;  // Valor máximo para cor branca
+int refletancia;      // Valor lido da refletância
 
-// Ultrasonic
-int distance;      // Distance measured by ultrasonic sensors
-int PLado = 70;    // Side reference point
-int PFrente = 70;  // Front reference point
+// Ultrassônico
+int distance;      // Distância medida pelos sensores ultrassônicos
+int PLado = 70;    // Ponto de referência lateral
+int PFrente = 75;  // Ponto de referência frontal
 int ParedeLados = 80;
 
-// Infrared
-int ballDirecao;      // Ball direction detected by infrared sensor
-int ballIntensi;      // Signal strength of the ball
-int IntensiMin = 80;  // Minimum intensity to consider ball detected
+// Infravermelho
+int ballDirecao;      // Direção da bola detectada pelo sensor infravermelho
+int ballIntensi;      // Intensidade do sinal da bola
+int IntensiMin = 80;  // Intensidade mínima para considerar a bola detectada
 
-// Switches
-const int chavecurso = 28;    // Pin for start/course switch
-int leituraSensores = false;  // Sensor reading state
-int modo = 1;
+// Chaves
+const int chavecurso = 28;    // Pino para a chave de início/curso
+int leituraSensores = false;  // Estado de leitura dos sensores
+int modo = 2;
 int robo = 2;
 
-void setup() {
-  Serial.begin(9600);  // Initialize serial communication
-  Wire.begin();        // Initialize I2C communication
+// robo 1 Atacante // Robo 2 Goleiro
 
-  Serial.println("Starting...");
+const int Menu = 33;
+const bool Tela = false;
+
+void setup() {
+  Serial.begin(9600);  // Inicializa comunicação serial
+  Wire.begin();        // Inicializa comunicação I2C
+  pinMode(Menu, INPUT);
+
+  Serial.println("Iniciando...");
 
   if (robo == 1) {
-    VeloCurva = 55;
-    VeloCurvaD = 45;
-    VeloFrente = 125;
+    VeloCurva = 60;
+    VeloCurvaD = 50;
+    VeloFrente = 150;
   } else {
     VeloCurva = 70;
     VeloCurvaD = 60;
-    VeloFrente = 135;
+    VeloFrente = 145;
   }
 
-  dribler("On", 255);  // Turn on dribbler with speed 220
+  dribler("On", 255);  // Liga o dribler com velocidade 220
 
-  // Sensors and switches configuration
+  // Configuração dos sensores e chaves
   pinMode(chavecurso, INPUT);
   pinMode(FrtR, INPUT);
   pinMode(EsqR, INPUT);
   pinMode(DirR, INPUT);
 
-  // Left motors configuration
+  // Configuração dos motores do lado esquerdo
   pinMode(IN1_ESQ, OUTPUT);
   pinMode(IN2_ESQ, OUTPUT);
   pinMode(IN3_ESQ, OUTPUT);
@@ -106,7 +112,7 @@ void setup() {
   pinMode(ENA_ESQ, OUTPUT);
   pinMode(ENB_ESQ, OUTPUT);
 
-  // Right motors configuration
+  // Configuração dos motores do lado direito
   pinMode(IN1_DIR, OUTPUT);
   pinMode(IN2_DIR, OUTPUT);
   pinMode(IN3_DIR, OUTPUT);
@@ -114,70 +120,80 @@ void setup() {
   pinMode(ENA_DIR, OUTPUT);
   pinMode(ENB_DIR, OUTPUT);
 
-  // Dribbler motor configuration
+  // Configuração do motor do dribler
   pinMode(ENA_DRIBLER, OUTPUT);
   pinMode(IN1_DRIBLER, OUTPUT);
   pinMode(IN2_DRIBLER, OUTPUT);
 
-  Serial.println("Motors OK!");
+  Serial.println("Motores ok!");
 
   if (Sensores == true) {
-    Serial.println("Sensors");
-    InfraredSeeker::Initialize();  // Initialize HiTechnic infrared sensor
-    ReadCompassSensor();           // Read compass value
-    Serial.println("HiTech sensors ready!");
+    Serial.println("Sensores");
+    InfraredSeeker::Initialize();  // Inicializa sensor infravermelho HiTechnic
+    ReadCompassSensor();           // Lê o valor da bússola
+    Serial.println("Sensores HiTech!");
   }
 
-  Serial.println("Setup Complete");
-  delay(1000);  // Wait 1 second before entering loop
+  Serial.println("Setup Feito");
 }
 
-void loop() {
-  //atacante();
+void loop() { 
   goleiro();
+  if (Tela == false) {
+    atacante();
+    return;
+  }
+
+  if (digitalRead(Menu) == HIGH) {
+    atacante();
+  } else {
+    parar();
+  }
 }
 
 void teste() {
-  Serial.println("Test");  // Print 'Test' to indicate diagnostics start
+  Serial.println("Teste");  // Imprime 'Teste' para indicar início do diagnóstico
 
-  Serial.print("Front Reflectance - ");
-  Serial.println(analogRead(FrtR));  // Read and print front reflectance value
+  Serial.print("Refletância Frente - ");
+  Serial.println(analogRead(FrtR));  // Lê e exibe valor do sensor de refletância frontal
 
-  Serial.print("Left Reflectance - ");
-  Serial.println(analogRead(EsqR));  // Read and print left reflectance value
+  Serial.print("Refletância Esquerda - ");
+  Serial.println(analogRead(EsqR));  // Lê e exibe valor do sensor de refletância esquerdo
 
-  Serial.print("Right Reflectance - ");
-  Serial.println(analogRead(DirR));  // Read and print right reflectance value
+  Serial.print("Refletância Direita - ");
+  Serial.println(analogRead(DirR));  // Lê e exibe valor do sensor de refletância direito
 
-  distance = UFrt.read();  // Read distance from front ultrasonic sensor
-  Serial.print("Ultra Front - ");
+  distance = UFrt.read();  // Lê distância do sensor ultrassônico frontal
+  Serial.print("Ultra Frente - ");
   Serial.println(distance);
 
-  distance = UTrs.read();  // Read distance from rear ultrasonic sensor
-  Serial.print("Ultra Rear - ");
+  distance = UTrs.read();  // Lê distância do sensor ultrassônico traseiro
+  Serial.print("Ultra Traseiro - ");
   Serial.println(distance);
 
-  distance = UEsq.read();  // Read distance from left ultrasonic sensor
-  Serial.print("Ultra Left - ");
+  distance = UEsq.read();  // Lê distância do sensor ultrassônico esquerdo
+  Serial.print("Ultra Esq - ");
   Serial.println(distance);
 
-  distance = UDir.read();  // Read distance from right ultrasonic sensor
-  Serial.print("Ultra Right - ");
+  distance = UDir.read();  // Lê distância do sensor ultrassônico direito
+  Serial.print("Ultra Dir - ");
   Serial.println(distance);
 
-  InfraredResult InfraredBall = InfraredSeeker::ReadAC();  // Read data from HiTechnic IR sensor
-  ballDirecao = InfraredBall.Direction;                    // Update ball direction
-  ballIntensi = InfraredBall.Strength;                     // Update ball signal strength
+  InfraredResult InfraredBall = InfraredSeeker::ReadAC();  // Lê dados do sensor infravermelho HiTechnic
+  ballDirecao = InfraredBall.Direction;                    // Atualiza direção da bola detectada
+  ballIntensi = InfraredBall.Strength;                     // Atualiza intensidade do sinal da bola
   Serial.print("Infrared - ");
-  Serial.println(ballDirecao);
+  Serial.print(ballDirecao);
+  Serial.print(" // Intensi - ");
+  Serial.println(ballIntensi);
 
-  ReadCompassSensor();  // Update compass reading
+  ReadCompassSensor();  // Atualiza leitura da bússola
   Serial.print("Compass - ");
   Serial.println(Bussola);
 
-  Serial.print("Switch - ");
-  Serial.println(digitalRead(chavecurso));  // Read and print switch state
+  Serial.print("Chave - ");
+  Serial.println(digitalRead(chavecurso));  // Lê e exibe estado da chave física
 
-  Serial.println("");  // Blank line to separate readings in serial monitor
-  delay(600);          // Wait 600 ms before next reading
+  Serial.println("");  // Linha em branco para separar leituras no monitor serial
+  delay(400);          // Aguarda 600 ms antes da próxima leitura
 }

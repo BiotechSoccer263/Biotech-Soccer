@@ -31,8 +31,8 @@ void conduzirBola(int velocidadeBase) {
     float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
     ajuste = constrain(ajuste, -100, 100);
 
-    int velEsq = constrain(velocidadeBase - ajuste, 0, 255);
-    int velDir = constrain(velocidadeBase + ajuste, 0, 255);
+    int velEsq = constrain(velocidadeBase + 20 - ajuste, 0, 255);
+    int velDir = constrain(velocidadeBase + 20 + ajuste, 0, 255);
 
     int refletanciaEsq = analogRead(EsqR);
     int refletanciaDir = analogRead(DirR);
@@ -75,7 +75,6 @@ void conduzirBola(int velocidadeBase) {
   while (1) {
     if (Bussola == gol || (Bussola >= BMin && Bussola <= BMax)) {
       parar();
-      delay(250);
       break;
     } else {
       alinhar();
@@ -112,14 +111,14 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
     float ajuste = Kp * erro + Ki * somaErro + Kd * derivada;
     ajuste = constrain(ajuste, -100, 100);
 
-    int velEsq = constrain(velocidadeBase - ajuste, 0, 255);
-    int velDir = constrain(velocidadeBase + ajuste, 0, 255);
+    int velEsq = constrain(velocidadeBase - ajuste - 25, 0, 255);
+    int velDir = constrain(velocidadeBase + ajuste - 25, 0, 255);
 
     alinhar();
 
     if (lado == "e") {
       // Move obrigatoriamente para a esquerda enquanto a distância do lado esquerdo for maior que PLado
-      if (UDir.read() <= (ParedeLados + 10)) {
+      if (UDir.read() <= (ParedeLados + 12)) {
         lateral("e", (velEsq + velDir) / 2);
       } else {
         while (1) {
@@ -135,7 +134,7 @@ void lateralAlinhadaPID(String lado, int velocidadeBase) {
       }
     } else if (lado == "d") {
       // Move obrigatoriamente para a direita enquanto a distância do lado direito for maior que PLado
-      if (UEsq.read() <= ParedeLados) {
+      if (UEsq.read() <= ParedeLados + 12) {
         lateral("d", (velEsq + velDir) / 2);
       } else {
         while (1) {
