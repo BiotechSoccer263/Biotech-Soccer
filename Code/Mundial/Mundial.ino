@@ -71,13 +71,13 @@ int IntensiMin = 80;  // Intensidade mínima para considerar a bola detectada
 // Chaves
 const int chavecurso = 28;    // Pino para a chave de início/curso
 int leituraSensores = false;  // Estado de leitura dos sensores
-int modo = 2;
-int robo = 2;
+int modo = 1;
+int robo = 1; // robo montado
 
 // robo 1 Atacante // Robo 2 Goleiro
 
 const int Menu = 33;
-const bool Tela = false;
+const bool Tela = false; 
 
 void setup() {
   Serial.begin(9600);  // Inicializa comunicação serial
