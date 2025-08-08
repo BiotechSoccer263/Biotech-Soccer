@@ -15,7 +15,6 @@
     </td>
     <td style="vertical-align: top; padding-left: 20px;">
       <ul>
-        <li><strong>Enzo Losi</strong> – Software</li>
         <li><strong>Fernanda Gomes</strong> – Hardware</li>
         <li><strong>Vinícius Sabino</strong> – Hardware</li>
         <li><strong>Hyvinin Prado</strong> – Software</li>
