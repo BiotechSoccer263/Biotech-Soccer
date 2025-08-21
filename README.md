@@ -11,7 +11,7 @@
 <table>
   <tr>
     <td width="250">
-      <img src="Extras/Team.jfif" alt="Foto do Time" width="100%" style="border-radius: 10px;" />
+      <img src="Extras/Team.jpg" alt="Foto do Time" width="100%" style="border-radius: 10px;" />
     </td>
     <td style="vertical-align: top; padding-left: 20px;">
       <ul>
