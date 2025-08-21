@@ -39,7 +39,7 @@
 <h2>🧾 Exemplo da Placa Eletrônica</h2>
 
 <p>
-  Abaixo, um exemplo visual da montagem da placa utilizada no robô do Mundial de 2025 (Salvador, Bahia, Brasil):
+  Abaixo, um exemplo visual da montagem da placa utilizada em nosso robô:
 </p>
 
 <img src="Board/BoardExample.gif" alt="Exemplo da Placa" width="60%" />
