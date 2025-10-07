@@ -50,9 +50,9 @@
 
 <ul>
   <li>Arduino (Plataforma embarcada)</li>
-  <li>Sensores ultrassônicos, infravermelho e bússola digital</li>
+  <li>Sensores ultrassônicos, refletância, infravermelho e bússola digital</li>
   <li>Linguagem C/C++ para lógica de movimentação e controle</li>
-  <li>Git e GitHub para controle de versão e colaboração</li>
+  <li>GitHub para controle de versão e colaboração</li>
 </ul>
 
 <hr>
